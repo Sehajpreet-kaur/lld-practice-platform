@@ -13,8 +13,8 @@ classDiagram
     +String slug
     +String difficulty
     +String description
-    +String[] requirements
-    +String[] tags
+    +List~String~ requirements
+    +List~String~ tags
   }
 
   class User {
@@ -24,27 +24,27 @@ classDiagram
   }
 
   class Attempt {
-    +ObjectId problem
-    +ObjectId user
+    +String problem
+    +String user
     +String status
-    +ObjectId submission
+    +String submission
     +Date startedAt
     +Date submittedAt
   }
 
   class Submission {
-    +ObjectId attempt
+    +String attempt
     +String format
     +String content
     +String status
     +String failureReason
-    +ObjectId evaluation
+    +String evaluation
   }
 
   class Evaluation {
-    +ObjectId submission
+    +String submission
     +String evaluatorType
-    +Criterion[] criteria
+    +List~Criterion~ criteria
     +String overallSummary
     +Number confidence
   }
@@ -87,11 +87,11 @@ classDiagram
     +retryEvaluation(submissionId, problemId, evaluatorType) Evaluation
   }
 
-  Problem "1" --> "many" Attempt : attempted via
-  User "1" --> "many" Attempt : makes
+  Problem "1" --> "*" Attempt : attempted via
+  User "1" --> "*" Attempt : makes
   Attempt "1" --> "0..1" Submission : produces
   Submission "1" --> "0..1" Evaluation : evaluated into
-  Evaluation "1" --> "many" Criterion : contains
+  Evaluation "1" --> "*" Criterion : contains
   Evaluator <|.. LLMEvaluator : implements
   Evaluator <|.. RuleBasedEvaluator : implements
   EvaluatorRegistry ..> Evaluator : constructs
@@ -99,6 +99,8 @@ classDiagram
   EvaluationService ..> Submission : reads/updates status
   EvaluationService ..> Evaluation : creates
 ```
+
+> Note: field types above use `String` for what are really MongoDB `ObjectId` references (`problem`, `user`, `submission`, `evaluation`, `attempt`) — simplified for diagram readability. The actual Mongoose schemas use `ObjectId` refs; see §2 below for the real field types.
 
 **Reading the arrows:** solid diamond-less arrows (`-->`) are references (Mongo `ObjectId`s, not object composition — this is a document DB, not an in-memory object graph). Hollow-triangle dashed arrows (`<|..`) are interface implementation. Plain dashed arrows (`..>`) are dependency — a class that *uses* another without owning or extending it. `EvaluationService` depends on the `Evaluator` abstraction only; it never imports `LLMEvaluator` or `RuleBasedEvaluator` directly.
 
