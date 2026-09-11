@@ -7,9 +7,14 @@ import submissionRoutes from "./routes/submissions.js";
 
 export function createApp() {
   const app = express();
-  app.use(cors({
-    origin : process.env.FRONTEND_URL
-}));
+  const allowedOrigin = process.env.FRONTEND_URL;
+    app.use(
+      cors(
+        allowedOrigin
+          ? { origin: allowedOrigin, credentials: true }
+          : {} // open, for local dev
+      )
+    );
   app.use(express.json());
 
   app.get("/health", (req, res) => res.json({ ok: true }));
