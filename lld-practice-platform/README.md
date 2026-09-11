@@ -7,7 +7,7 @@ A small end-to-end platform for practicing Low-Level Design problems and getting
 ## Stack
 
 - **Backend:** Node.js, Express, MongoDB (Mongoose), JWT auth
-- **AI evaluation:** Groq API (`llama-3.1-8b-instant`), fixed-rubric prompt with structured JSON output
+- **AI evaluation:** Groq API (`openai/gpt-oss-120b`), fixed-rubric prompt with structured JSON output
 - **Frontend:** React (Vite), React Router
 - **Tests:** Jest + Supertest + mongodb-memory-server
 
